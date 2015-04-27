@@ -54,6 +54,7 @@ public class BallController : MonoBehaviour {
 	public void ResetPosition() {
 		transform.position = new Vector3 (0f, 0f, -0.5f);
 		rb.velocity = new Vector2 (0f, 0f);
+		rb.angularVelocity = 0f;
 		mainLight.RaiseLights ();
 		scoreTextController.LowerAlpha ();
 		Invoke ("LaunchBall", 4f);
