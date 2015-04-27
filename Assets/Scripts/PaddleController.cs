@@ -18,13 +18,13 @@ public class PaddleController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
 		float v = Input.GetAxis (inputName);
 		yValue = map(v, -1f, 1f, -3.5f, 3.5f);
 		Vector2 newPos = transform.position;
 		float oldY = transform.position.y;
 		if ((oldY < 3.5f && oldY > -3.5f) || (oldY >= 3.5f && yValue < 0f) || (oldY <= -3.5f && yValue > 0f))
-			newPos.y += yValue * paddleSpeed;
+			newPos.y += yValue * paddleSpeed * Time.deltaTime;
 		transform.position = newPos;
 
 	}
