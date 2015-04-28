@@ -5,12 +5,14 @@ public class BreakoutPaddleController : MonoBehaviour {
 
 	public float paddleSpeed;
 	public float maxX;
+	public AudioClip paddleClip;
 
+	private AudioSource paddleSFX;
 	private float hValue;
 
 	// Use this for initialization
 	void Start () {
-	
+		paddleSFX = GetComponent<AudioSource> ();
 	}
 	
 	// Update is called once per frame
@@ -31,5 +33,9 @@ public class BreakoutPaddleController : MonoBehaviour {
 	float map(float s, float a1, float a2, float b1, float b2)
 	{
 		return b1 + (s-a1)*(b2-b1)/(a2-a1);
+	}
+
+	void OnCollisionEnter2D() {
+		paddleSFX.PlayOneShot (paddleClip, 0.5f);
 	}
 }

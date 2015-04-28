@@ -3,17 +3,25 @@ using System.Collections;
 
 public class BreakoutBallController : MonoBehaviour {
 
+	public float bouncePitchUp;
 	public float angleForce;
-	public float launchForce;
+	public Vector2 launchForce;
+	public AudioClip bounceClip;
 
+	private Vector3 startPosition;
+	private float storedPitch;
+	private AudioSource ballSFX;
 	private bool launched;
 	private Rigidbody2D rb;
 	private Transform paddle;
+	private ScoreCounter scoreText;
 
 	// Use this for initialization
 	void Start () {
+		ballSFX = GetComponent<AudioSource> ();
 		rb = GetComponent<Rigidbody2D> ();
 		paddle = GameObject.FindGameObjectWithTag ("Player").GetComponent<Transform> ();
+		scoreText = GameObject.FindGameObjectWithTag ("scoreText").GetComponent<ScoreCounter> ();
 		launched = false;
 	}
 	
@@ -22,28 +30,28 @@ public class BreakoutBallController : MonoBehaviour {
 		// If 'launch' is pressed and not already launched, apply upwards force with some horizontal variation.
 		if (Input.GetButtonDown ("Launch") && !launched) {
 			launched = true;
-			float hVariation = Random.Range (-50f, 50f);
-			rb.AddForce (new Vector2 (hVariation, launchForce));
-		}
-		// If not launched, follow paddle x position.
-		else if (!launched) {
-			Vector3 newPos = transform.position;
-			newPos.x = paddle.position.x;
-			transform.position = newPos;
+			rb.AddForce (launchForce);
 		}
 	}
 
 	void OnCollisionEnter2D(Collision2D other) {
-		// If colliding with a block, destroy it.
-		if (other.gameObject.tag == "block") {
-			other.gameObject.GetComponent<Renderer>().enabled = false;
-			Destroy (other.gameObject, 0.1f);	
-		} 
-		// If colliding with the paddle, add a force relative to the paddle movement.
-		else if (other.gameObject.tag == "Player") {
-			BreakoutPaddleController paddle = other.gameObject.GetComponent<BreakoutPaddleController> ();
-			float paddleHorizontal = paddle.GetHorizontal ();
-			rb.AddForce (Vector2.right * paddleHorizontal * angleForce);
+		if (other.gameObject.tag == "Player") {
+			ballSFX.pitch = 1.0f;
+		} else if (other.gameObject.tag == "block") {
+			scoreText.IncreaseScore();
+			ballSFX.pitch += bouncePitchUp;
+			ballSFX.Stop();
+			ballSFX.PlayOneShot (bounceClip);
+		} else {
+			ballSFX.pitch += bouncePitchUp;
+			ballSFX.Stop();
+			ballSFX.PlayOneShot (bounceClip);
 		}
+	}
+
+	void OnTriggerEnter2D() {
+		launched = false;
+		rb.velocity = Vector2.zero;
+		transform.position = new Vector2 (-7f, 0f);
 	}
 }
