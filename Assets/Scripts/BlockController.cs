@@ -6,6 +6,8 @@ public class BlockController : MonoBehaviour {
 	public int blockHealth;
 	public Material health2Mat;
 	public Material health1Mat;
+	public GameObject[] powerUps;
+	public float powerUpChance;
 
 	private Renderer r;
 
@@ -21,6 +23,11 @@ public class BlockController : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D other) {
 		blockHealth -= 1;
+
+		if (Random.Range (0f, 1f) < powerUpChance) {
+			int type = Random.Range(0, 2);
+			Instantiate(powerUps[type], transform.position, Quaternion.Euler(90f, 0f, 0f));
+		}
 
 		switch (blockHealth)
 		{
