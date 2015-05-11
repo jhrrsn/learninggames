@@ -1,0 +1,117 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fnil\fcharset0 Consolas-Bold;\f1\fnil\fcharset0 Consolas;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\vieww12000\viewh13660\viewkind0
+\deftab720
+\pard\pardeftab720\sl276\slmult1\sa200
+
+\f0\b\fs24 \cf0 Setup guide:
+\fs22 \
+
+\f1\b0\fs19 1) Create three layers: light sources, ambient light, light obstacles. You could do this in Edit -> Project Settings -> Tags and layers.\
+2) Press GameObject / Light2D / Lighting system. Enter layers you created in previous step.\
+2) !!!ONLY FOR 2D TOOLKIT!!! Press GameObject -> Light2D -> Enable 2DTK Support.\
+3) Adjust settings in LightingSystem script attached to main camera.\
+4) Add light sources, light obstacles and ambient light to scene.
+\f0\b\fs24 \
+How to use:
+\f1\b0\fs19 \
+When you just created lighting system you will see black screen. To fix that you must add light sources or ambient light. \
+To add light source click GameObject / Light2D / Light Source and configure sprite / scale / color of created light. Then adjust Light Pixel Size in lighting system. Light sources is using path tracking to make shadows.\
+Next you cold add a light obstacle. To do this create sprite and set it's layer to Light Obstacles Layer or attach LightObstacleGenerator script to any SpriteRenderer. LightObstacleGenerator will create light obstacle from that sprite at runtime. Black obstacle is fully opaque, white is fully transparent. Colored obstacle will allow to pass some color components of light throught it. For example, red obstacle will make passing light red and absorb blue and green components.\
+Ambient Light. You could use ambient light to highlight big areas without light sources. To do that you need to create mesh / sprite renderer and set it's layer to Ambient Light Layer.\
+
+\f0\b\fs24 Class reference:\
+
+\fs19 LightingSystem
+\f1\b0 .
+\f0\b  
+\f1\b0 Main script for lights. Should be attached to camera. Handles lighting operation like camera setup, shader setup, merging cameras output together, blurring and some others.\
+
+\f0\b LightSprite
+\f1\b0 . Supplies data to light so it could render properly. Materials with "Light xxx" shaders require that script to be attached.\
+
+\f0\b LightObstacleGenerator
+\f1\b0 . That class is generating obstacles for object it attached to. Object must have MeshRenderer, SpriteRenderer or CustomSprite script from which texture for obstacle will be grabbed.\
+
+\f0\b LightObstacleMesh
+\f1\b0 . Automatically updating mesh, material and main texture of light obstacle. Class is copying all data used for rendering from parent.\
+
+\f0\b LightObstacleSprite
+\f1\b0 . Sprite with dual color support.\
+
+\f0\b\fs24 LightingSystem settings:\
+
+\f1\b0\fs19 1) Light Pixel Size. This value controls lighting texture size. Small values could cause poor performance. Will work correctly only when camera is in orthographic mode. When camera is perspective just tweak it until you get good results.\
+2) Light Camera Size Add. Orthographic size of light camera will be bigger than of main camera by that value. Required to render off screen lights. Set it higher if light flickers when it's near screen corners. Lower it if you don't have such issues. Used only when camera is ortographic.\
+3) Light Camera Fov Add. Similiar to "Light Camera Size Add", but for perspective camera. Field of view of light camera will be bigger than of main camera by that value.\
+3) Enable Ambient Light. Disable it if you don't use ambient lighting to increase performance.\
+4) Blur Light Sources. Applies blur to light sources render texture if checked. Light Sources Blur Material is used for blurring. Increases lighting quality, but uses one aditional DrawCall.\
+5) Blur Ambient Light. Applies blur to ambient light render texture if checked. Ambient Light Blur Material is used for blurring. Increases lighting quality, but uses one aditional DrawCall.\
+6) HDR (64 Bit Color). ARGBHalf render texture format will be used instead of ARGB32. That will increase color percision. Will be turned off if device is not supports it.\
+7) Light Obstacles Antialiasing. SSAAx2 will be used to draw light obstacles. That means light obstacles render texture size is doubled and downsampled after rendering. Adds one DrawCall.\
+8) Ambient Light Compute Material. Used for rendering ambient light. You could change some parameters in material. Here are they:\
+\pard\pardeftab720\li720\sl276\slmult1\sa200
+\cf0 8.1) Obstacle Mul. Obstacles color is multiplied by that value.\
+8.2) Obstacle Add. Value is added to all components of obstacles color.\
+8.3) Emission color mul. Ambient light sources color is multiplied by that value.\
+8.4) Average sampling distance. Samping distance for iterative rendering of ambient light. Measured in UV coordinate units.\
+\pard\pardeftab720\sl276\slmult1\sa200
+\cf0 9) Light Overlay Material. Used for merging game and light textures together. You could change some parameters in material. Here are they:\
+	9.1) Light Sources Multiplier. Light sources color is multiplied by that 	value.\
+	9.2) Resulting Light Multiplier. After merging light sources and ambient 	light textures they are multiplied by that value.	\
+	9.4) Additive Light Pow. Used for glow effect. Lesser value means more 	glow.\
+	9.3) Additive Light Add. Used for glow effect. Bigger value means more 	glow.\
+10) Light Sources Blur Material. Used for light sources blurring.\
+11) Ambient Light Blur Material. Used for ambient light blurring.\
+12) Light Camera. Camera that will be used for light rendering.\
+13) Light Sources Layer. All renderers with that layer will be rendered to light sources texture.\
+14) Ambient Light Layer. All renderers with that layer will be rendered to ambient light texture.\
+15) Light Obstacles Layer. All renderers with that layer will be rendered to light obstacles texture.\
+\
+
+\f0\b\fs24 Shaders:
+\f1\b0\fs19 \
+
+\f0\b Light X Points
+\f1\b0 . These shaders have path tracking of X points. Bigger point count means better quality and lower GPU performance. Point count have no effect on CPU performance. Properties:\
+\pard\pardeftab720\li720\sl276\slmult1\sa200
+\cf0 Obstacle Mul. Color of light obstacles is multiplied by that value. Greater value will make obstacles stronger. With zero all obstacles will be ignored.\
+Emission color mul. Color of the light source is multiplied by that value. Greater value will make light brighter.\
+\pard\pardeftab720\sl276\slmult1\sa200
+
+\f0\b \cf0 Light 1 Point
+\f1\b0 . Simple shader without path tracking. Could be used within particle system.\
+
+\f0\b Light Ignoring Obstacles
+\f1\b0 . This shader will ignore light obstacles. A bit faster than "Light 1 Point".\
+
+\f0\b Light Auto Points
+\f1\b0 . Shader with variable path tracking points count. That shader could be used only on desktop because most of mobiles don't support it. This is most expensive shader, but it solves some quality issues on high resolution light textures or large lights.\
+
+\f0\b Unilt Transparent Dual Color
+\f1\b0 . Shader is similiar to standard Unlit / Transparent, but it have aditional vertex color. RGB components of that color is additive. Alpha is some mix between additive and multiplicative.\
+
+\f0\b Fast Blur
+\f1\b0 . Simple one pass blurring shader. Properties:\
+\pard\pardeftab720\li720\sl276\slmult1\sa200
+\cf0 Distance. Blur distance in pixels.\
+\pard\pardeftab720\sl276\slmult1\sa200
+
+\f0\b \cf0 Ambient Light Computer
+\f1\b0 . Used to compute ambient light. Properties:\
+\pard\pardeftab720\li720\sl276\slmult1\sa200
+\cf0 Obstacle Mul. Color of light obstacles is multiplied by that value. Greater value will make obstacles stronger. With zero all obstacles will be ignored.\
+Obstacle Add. Value is added to every pixel in fullscreen light obstacle texture. Greater values will make ambient light weaker.\
+Emission Color Mul. Color of ambient light is multiplied by that value. Greater values will make ambient light stronger.\
+Average Sampling Distance. Similiar to a blur distance.\
+\pard\pardeftab720\sl276\slmult1\sa200
+
+\f0\b \cf0 Light Overlay
+\f1\b0 . Used to merge game, ambient light and light sources textures together.\
+\pard\pardeftab720\li720\sl276\slmult1\sa200
+\cf0 Light Sources Multiplier. Color of all light sources is multiplied by that value. Greater value will make light brighter.\
+Resulting Light Multiplier. Merged ambient light and light sources is multiplied by that value. Greater value will make all lighting brighter.\
+Additive Light Pow. Bigger values will make bloom threshold higher.\
+Additive Light Add. Bloom power. Bigger value will make stronger bloom.\
+}
