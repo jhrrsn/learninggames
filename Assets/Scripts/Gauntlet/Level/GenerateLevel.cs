@@ -22,7 +22,6 @@ public class GenerateLevel : MonoBehaviour {
 	
 	void SpawnAsset(int key, int x, int y) {
 		Vector2 pos = new Vector2 (x, -y);
-		if (key != 1)
-			Instantiate (assets[key], pos, Quaternion.identity);
+		Instantiate (assets[key], pos, Quaternion.identity);
 	}
 }

@@ -4,16 +4,13 @@ using System.Collections;
 public class MobHealth : MonoBehaviour {
 
 	public int maxHealth;
-	public int scoreGained;
-	
+
 	private int currentHealth;
-	private GameController gc;
 	private SpawnerController mySpawner;
 	
 	// Use this for initialization
 	void Start () {
 		currentHealth = maxHealth;
-		gc = GameObject.FindGameObjectWithTag ("GameController").GetComponent<GameController>();
 	}
 	
 	// Update is called once per frame
@@ -24,7 +21,6 @@ public class MobHealth : MonoBehaviour {
 		if (other.gameObject.tag == "projectile") {
 			currentHealth -= 1;
 			if (currentHealth == 0) {
-				gc.IncreaseScore (scoreGained);
 				Die ();
 			}
 		}
