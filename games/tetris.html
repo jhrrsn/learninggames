@@ -65,6 +65,14 @@
                 </div>
               </div>
             </div>
+            <br>
+            <p>
+              Tetris is a deceptively challenging game to program - especially if, like me, you've only really made action games before. I got pretty frustrated trying to wrap my head around the architecture of the program - <a href="http://tutorials.jenkov.com/flex-tetris/conceptual-implementation.html">this conceptual implementation</a> was a great help. 
+            </p>
+            <p>
+              Creating a system that restricts the movement and rotation of the pieces to make sure they don't leave the boundaries of the grid or clip placed blocks is <em>tough</em>. In the end I went with an 'undo' system that makes the tranformation (rotational or horizontal), checks whether that new position is valid, and undoes the transformation if it's not. Moving blocks are not monitored by the grid manager, only when they reach a resting position are the cells 'checked in' to the grid. At this point we check &amp; clear full rows and shift down the above rows appropriately.
+            </p>
+            <p>The track playing is <em>In Decay</em>, by <a href="http://comtruise.com">Com Truise</a>. It's available from <a href="http://ghostly.com/media">Ghostly International</a>.</p>
             <p>Code &amp; project files can be found on <a href="https://github.com/jhrrsn/learninggames">Github</a>.</p>
           </div>
 
