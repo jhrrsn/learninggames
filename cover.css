@@ -178,6 +178,11 @@ body {
   color: #ccc;
 }
 
+.cover-heading {
+  padding-top: 2em;
+  padding-bottom: 1em;
+}
+
 /*
  * Unity
  */
