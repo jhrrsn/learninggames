@@ -183,6 +183,10 @@ body {
   padding-bottom: 1em;
 }
 
+.create-date {
+  font-size: 0.7em;
+}
+
 /*
  * Unity
  */
